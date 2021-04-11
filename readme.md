@@ -1,6 +1,8 @@
 # You don't (may not) need loops :loop:
 [![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/you-dont-need/loops)
 
+批注：我将会用一段时间批注这篇文章，指出其中不合理的实践，敬请期待。
+
 ## Prerequisites: 
 
 Loops are one of the first constructs that junior programmers learn, but they can pose many potential issues in the software development process, and could be avoided in many cases.
