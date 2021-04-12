@@ -21,7 +21,9 @@ JavaScript is about trade-offs. There’s a tension between writing code that is
 
 （在 JS 里）自己编写高阶函数轮子有什么问题？
 
-如果只是想学习函数式编程，完全不需要造轮子。由于 JavaScript 抄了 Scheme ，所以去看用 Scheme 讲函数式编程的 [SICP ](https://github.com/DeathKing/Learning-SICP)就够了。JavaScript 模仿 Scheme 自己造了函数式轮子，结果造出了这样的东西。
+如果只是想学习函数式编程，完全不需要造轮子。
+
+由于 JavaScript 抄了 Scheme ，所以去看用 Scheme 讲函数式编程的 [SICP ](https://github.com/DeathKing/Learning-SICP)就够了。JavaScript 模仿 Scheme 自己造了函数式轮子，结果造出了这样的东西。
 
 ```JavaScript
 const v = [11,11,11].map(parseInt);
@@ -29,9 +31,7 @@ const v = [11,11,11].map(parseInt);
 ```
 请自行评估造函数式轮子（以及所有配套轮子）的必要性。
 
-截止 2021 年，[大部分 JS 引擎不支持尾递归（尾调用）优化](http://kangax.github.io/compat-table/es6/#test-proper_tail_calls_(tail_call_optimisation)。而你用 map, reduce, forEach, filter. 基本都能享受优化。
-
-
+截止 2021 年，[大部分 JS 引擎不支持尾递归（尾调用）优化](http://kangax.github.io/compat-table/es6/#test-proper_tail_calls_(tail_call_optimisation)). 而你使用函数如 map, reduce, forEach, filter. 基本都能享受优化。
 
 ### Correctness by construction
 
