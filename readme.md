@@ -1,23 +1,73 @@
 # You don't (may not) need loops :loop:
 [![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/you-dont-need/loops)
 
-批注：我将会用一段时间批注这篇文章，指出其中不合理的实践，敬请期待。
+批注：我将会用一段时间批注这篇文章，指出其中不合理的实践，以及为数不多的精华。持续更新中。
 
 ## Prerequisites: 
 
 Loops are one of the first constructs that junior programmers learn, but they can pose many potential issues in the software development process, and could be avoided in many cases.
 
+没错，确实很多时候可以避免写出循环、
+
 "Isn't this another loops vs recursions?" No, neither is particularly good in fact. `reduce` is pretty low level too and functional developers don't use it much either. But it's very important to know where those expressive higher-order functions are coming from.
+
+`map` 和 `reduce` 是最有用，语义也最清晰的两个高阶函数。`map` 是对传入对象的每个元素进行变换，`reduce` 是对整个传入对象进行变换。用这两个函数来替换循环是合理的。
+
+要写出语义清晰的函数式代码，一般只需要用这两个函数另加两个函数：`forEach` 和 `filter`.
 
 Loops include `for`, `forEach`, `while`, `do`, `for...of` and `for...in`. You might argue that built in array methods such as `map` or `reduce` also uses loops. Well that's true, so we are going to define our own. In real life, you’d use a library or built in array methods, but it's good to start from scratch and understand the principles. The performance won't be great, you ask. Yes I heard you, and please read on for now.
 
 JavaScript is about trade-offs. There’s a tension between writing code that is performant, code that is maintainable and easy to understand, and code that is correct by construction. It's probably very hard to balance them and that's the source of debates in your pull requests.
+
+（在 JS 里）自己编写高阶函数轮子有什么问题？
+
+如果只是想学习函数式编程，完全不需要造轮子。由于 JavaScript 抄了 Scheme ，所以去看用 Scheme 讲函数式编程的 [SICP ](https://github.com/DeathKing/Learning-SICP)就够了。JavaScript 模仿 Scheme 自己造了函数式轮子，结果造出了这样的东西。
+
+```JavaScript
+const v = [11,11,11].map(parseInt);
+// v == [11, NaN, 3]
+```
+请自行评估造函数式轮子（以及所有配套轮子）的必要性。
+
+截止 2021 年，[大部分 JS 引擎不支持尾递归（尾调用）优化](http://kangax.github.io/compat-table/es6/#test-proper_tail_calls_(tail_call_optimisation)。而你用 map, reduce, forEach, filter. 基本都能享受优化。
+
+
 
 ### Correctness by construction
 
 > Simple English: No bugs
 
 Loops have four main problems: [Off-by-one error](https://en.wikipedia.org/wiki/Off-by-one_error), [Infinite loop](https://en.wikipedia.org/wiki/Infinite_loop), Statefulness and Hidden intent. You might argue loops like `for...in` won't have Off-by-one error, yes but it's still stateful and can hide intent. Recursions have some of the problems too.
+
+在循环中如何解决 off-by-one 问题：
+
+我的第一个建议是，尽可能的使用左闭右开区间。我的第二个建议是，识别语言陷阱。
+语言陷阱如 C++ 有：
+```C++
+// 我想从第一个元素累加到倒数第二个元素
+std::vector<int> v(0);
+int sum=0;
+for(int i=0;i<v.size()-1;++i){ //无限循环
+	sum+==v[i];
+}
+```
+为什么会无限循环？因为 `v.size()` 返回的是无符号的 `size_t `类型，0 - 1之后溢出直接变为 `unsigned_int` 的最大值。
+
+那再试试用函数式编程呢？
+```C++
+// 我想从第一个元素累加到倒数第二个元素
+std::vector<int> v(0);
+int sum = accumulate(v.begin(),v.end()-1,
+					0,
+					[](int a,int b){return a+b;});
+```
+问题没有解决，在空 `vector` 的情况下, `v.end()-1` 此时是一个未定义行为。
+
+这样的需求，不是说使用函数式编程，就能避免判断不合理的前置条件的。
+
+其他的语言陷阱还有 Python 的负数下标问题。
+
+无限循环的问题，待续。
 
 ### Ergonomics and maintainability
 
