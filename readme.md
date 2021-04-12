@@ -1,19 +1,19 @@
 # You don't (may not) need loops :loop:
 [![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/you-dont-need/loops)
 
-批注：我将会用一段时间批注这篇文章，指出其中不合理的实践，以及为数不多的精华。持续更新中。
+批注：文章非我所写，但因为此文将函数式编程当作减肥药兜售，故我认为该用批判的眼光对待这篇文章。由于这篇文章用的编程语言是 JavaScript ，所以我一般是指在 JavaScript 中更好的写法，而不是函数没有副作用某些编程语言。我将会用一段时间批注这篇文章，指出其中不合理的实践，以及为数不多的精华。持续更新中。
 
 ## Prerequisites: 
 
 Loops are one of the first constructs that junior programmers learn, but they can pose many potential issues in the software development process, and could be avoided in many cases.
 
-没错，确实很多时候可以避免写出循环、
+没错，确实很多时候可以避免写出循环。
 
 "Isn't this another loops vs recursions?" No, neither is particularly good in fact. `reduce` is pretty low level too and functional developers don't use it much either. But it's very important to know where those expressive higher-order functions are coming from.
 
-`map` 和 `reduce` 是最有用，语义也最清晰的两个高阶函数。`map` 是对传入对象的每个元素进行变换，`reduce` 是对整个传入对象进行变换。用这两个函数来替换循环是合理的。
+`map` 和 `reduce` 是最有用，语义也最清晰的两个高阶函数。`map` 是对每个元素进行变换，`reduce` 是对整个列表进行变换。用这两个函数来替换循环是合理的。
 
-要写出语义清晰的函数式代码，一般只需要用这两个函数另加两个函数：`forEach` 和 `filter`.
+在 JS 中要写出语义清晰的函数式代码，一般只需要用这两个函数另加两个函数：`forEach` 和 `filter`.
 
 Loops include `for`, `forEach`, `while`, `do`, `for...of` and `for...in`. You might argue that built in array methods such as `map` or `reduce` also uses loops. Well that's true, so we are going to define our own. In real life, you’d use a library or built in array methods, but it's good to start from scratch and understand the principles. The performance won't be great, you ask. Yes I heard you, and please read on for now.
 
@@ -23,7 +23,7 @@ JavaScript is about trade-offs. There’s a tension between writing code that is
 
 如果只是想学习函数式编程，完全不需要造轮子。
 
-由于 JavaScript 抄了 Scheme ，所以去看用 Scheme 讲函数式编程的 [SICP ](https://github.com/DeathKing/Learning-SICP)就够了。JavaScript 模仿 Scheme 自己造了函数式轮子，结果造出了这样的东西。
+由于 JavaScript 抄了 Scheme ，所以去看用 Scheme 讲函数式编程的 [SICP](https://github.com/DeathKing/Learning-SICP)就够了。JavaScript 模仿 Scheme 自己造了函数式轮子，结果造出了这样的东西。
 
 ```JavaScript
 const v = [11,11,11].map(parseInt);
@@ -42,38 +42,56 @@ Loops have four main problems: [Off-by-one error](https://en.wikipedia.org/wiki/
 在循环中如何解决 off-by-one 问题：
 
 我的第一个建议是，尽可能的使用左闭右开区间。我的第二个建议是，识别语言陷阱。
+
 语言陷阱如 C++ 有：
 ```C++
 // 我想从第一个元素累加到倒数第二个元素
 std::vector<int> v(0);
 int sum=0;
-for(int i=0;i<v.size()-1;++i){ //无限循环
+for(int i=0;i<v.size()-1;++i){ //下标溢出
 	sum+==v[i];
 }
 ```
-为什么会无限循环？因为 `v.size()` 返回的是无符号的 `size_t `类型，0 - 1之后溢出直接变为 `unsigned_int` 的最大值。
+为什么会无限循环？因为 `v.size()` 返回的是无符号的 `size_t `类型，0 - 1之后直接溢出为 `unsigned_int` 的最大值。
 
 那再试试用函数式编程呢？
 ```C++
 // 我想从第一个元素累加到倒数第二个元素
 std::vector<int> v(0);
-int sum = accumulate(v.begin(),v.end()-1,
+int sum = std::accumulate(v.begin(),v.end()-1,
 					0,
 					[](int a,int b){return a+b;});
 ```
 问题没有解决，在空 `vector` 的情况下, `v.end()-1` 此时是一个未定义行为。
 
-这样的需求，不是说使用函数式编程，就能避免判断不合理的前置条件的。
+如果有这样的需求，不是说使用函数式编程，就能避免仔细分析，判断循环终止条件的。
 
 其他的语言陷阱还有 Python 的负数下标问题。
 
-无限循环的问题，待续。
+如何防止无限循环：
+
+仔细分析循环中的不变式和终止条件，保证每次循环都在朝着终止条件前进而不会越走越远。
+
 
 ### Ergonomics and maintainability
 
 > Simple English: No refactoring
 
 Many developers hate it when there's change of requirements, because they have spent so much time on writing performant and bug-free code. When there's new requirements, you'll have to restructure your code and update your unit tests. Can you move your loops freely in your codebase? probably not, because there must be side effects or mutations. Big loops and nested loops are inevitable sometimes for performance reasons. You could do anything in a loop including uncontrolled side effects and therefore, it often breaks [rule of least power](https://en.wikipedia.org/wiki/Rule_of_least_power). Languages such as Haskll uses [fusion](https://stackoverflow.com/questions/38905369/what-is-fusion-in-haskell) to "merge" iterations. [Wholemeal programming](https://www.quora.com/What-is-wholemeal-programming) is a nice pattern to make code modular and reusable.
+
+副作用确实不好，但是我们就应该拥抱不变数据结构吗？
+
+拥抱不变的数据结构，确实可以解决一系列问题，但是解决的问题和数据共享有关或是和状态有关。
+
+React 拥抱了不变的数据结构，其中一个原因是想知道状态在何处变化。还有个原因是想在以后支持可中断的渲染。
+
+Erlang 拥抱了不变的数据结构，为了要保证程序可以并发执行。
+
+在 JavaScript 里不应该无限制的拥抱不变的数据结构，因为不变的世界是一个空间复杂度 O(n) 的世界。
+
+最后，没有副作用并不代表你就可以随意重构或是不写单元测试了。
+
+至于使用最低能量的工具，我表示认同，因为难以用 `break`、`continue` 等语句的 `map`、`filter` 确实写不出和这两个关键词有关的 bug ，并且由于其他的限制如只能遍历整个范围确实减轻了一部分心智负担。
 
 ### Runtime performance
 
