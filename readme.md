@@ -1,7 +1,7 @@
-# You don't (may not) need loops :loop:
+# 反 You don't (may not) need loops :loop: 
 [![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/you-dont-need/loops)
 
-批注：文章非我所写，但因为此文将函数式编程当作减肥药兜售，故我认为该用批判的眼光对待这篇文章。由于这篇文章用的编程语言是 JavaScript ，所以我一般是指在 JavaScript 中更好的写法，而不是函数没有副作用某些编程语言。我将会用一段时间批注这篇文章，指出其中不合理的实践，以及为数不多的精华。持续更新中。
+批注：文章非我所写，但因为此文将函数式编程当作减肥药兜售，故我用批判的眼光对待这篇文章。由于这篇文章用的编程语言是 JavaScript ，所以我说的更好的写法是在 JavaScript 中的更好，而不是在没有副作用的某些函数式编程语言中的更好。我将会用一段时间批注这篇文章，指出其中不合理的实践，以及为数不多的精华。持续更新中。
 
 ## Prerequisites: 
 
@@ -23,7 +23,7 @@ JavaScript is about trade-offs. There’s a tension between writing code that is
 
 如果只是想学习函数式编程，完全不需要造轮子。
 
-由于 JavaScript 抄了 Scheme ，所以去看用 Scheme 讲函数式编程的 [SICP](https://github.com/DeathKing/Learning-SICP)就够了。JavaScript 模仿 Scheme 自己造了函数式轮子，结果造出了这样的东西。
+由于 JS 抄了 Scheme ，所以去看用 Scheme 讲函数式编程的 [SICP](https://github.com/DeathKing/Learning-SICP) 或许更好。JS 模仿 Scheme 自己造了函数式轮子，结果造出了下面这样的东西。
 
 ```JavaScript
 const v = [11,11,11].map(parseInt);
